@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  # MySQL database
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:  #Set database initialization environment variables
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: data_collection  #will create this database on startup automatically
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql #run init.sql script when container starts
+
+  # MongoDB database
+  mongo:
+    image: mongo:6
+    container_name: mongo_db
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # Enter Data Web App 
+  enter-data:
+    build: ./enter-data  #change it! Build the image from the Dockerfile in the ./enter-data folder.
+    container_name: enter_data_app
+    restart: always
+    environment:
+      - MYSQL_HOST=mysql  # to connect to the MySQL service
+      - MYSQL_USER=appuser
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=data_collection
+      - AUTH_URL=http://auth:5000  #change it! URL for the auth service
+    ports:
+      - "5000:5000"
+    depends_on: #Make sure mysql and auth are started first
+      - mysql
+      - auth
+
+  # Show Results Web App 
+  show-results:
+    build: ./show-results  #change it!this is the folder name of the show-results app
+    container_name: show_results_app
+    restart: always
+    environment:
+      - MONGO_HOST=mongo
+      - AUTH_URL=http://auth:5000
+    ports:
+      - "5001:5001"
+    depends_on:
+      - mongo
+      - auth
+
+  # Auth Service
+  auth:
+    build: ./auth  #change it!
+    container_name: auth_service
+    restart: always
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=appuser
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=data_collection
+    ports:
+      - "5002:5002"
+    depends_on:
+      - mysql
+
+  # Analytics Service
+  analytics:
+    build: ./analytics
+    container_name: analytics_service
+    restart: always
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=appuser
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=data_collection
+      - MONGO_HOST=mongo
+    depends_on:
+      - mysql
+      - mongo
+
+volumes:
+  mysql_data:
+  mongo_data:
