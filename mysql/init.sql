@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS grades_db;
+
+USE grades_db;
+
+CREATE TABLE IF NOT EXISTS grades (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    student_number VARCHAR(20) NOT NULL,
+    course VARCHAR (20) NOT NULL,
+    grade INT NOT NULL
+);
