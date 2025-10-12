@@ -7,4 +7,5 @@ CREATE TABLE IF NOT EXISTS grades (
     student_number VARCHAR(20) NOT NULL,
     course VARCHAR (20) NOT NULL,
     grade INT NOT NULL
+
 );
