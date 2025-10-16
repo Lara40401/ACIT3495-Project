@@ -14,20 +14,6 @@ const users = [
   { id: 2, username: 'user1', password: 'pass123' }
 ];
 
-// Protect routes
-function verifyToken(req, res, next) {
-    const token = req.header('Authorization');
-    if (!token) return res.status(401).json({ error: 'Access denied' });
-
-    try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.userId = decoded.userId;
-    next();
-    } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
-    }
- };
-
 // Login
 app.post('/login', (req, res) => {
     try {
@@ -51,13 +37,27 @@ app.post('/login', (req, res) => {
     }
 });
 
+// Protect routes
+function verifyToken(req, res, next) {
+    const token = req.header('Authorization');
+    if (!token) return res.status(401).json({ error: 'Access denied' });
+
+    try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.userId = decoded.userId;
+    next();
+    } catch (error) {
+    res.status(401).json({ error: 'Invalid token' });
+    }
+ };
+
 // Token validation
 app.post('/validate', verifyToken, (req, res) => {
     res.status(200).json({ message: 'Authorized user' });
 });
 
 app.listen(PORT, () => {
-    console.log(`Auth service running on port ${PORT}`);
+    console.log('Running on port ${PORT}');
 });
 
 // reference: https://dvmhn07.medium.com/jwt-authentication-in-node-js-a-practical-guide-c8ab1b432a49

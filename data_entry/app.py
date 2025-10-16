@@ -28,9 +28,9 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        res = requests.post(f'{AUTH_SERVICE_URL}/login', json={'username': username, 'password': password})
-        if res.status_code == 200: 
-            data = res.json()
+        response = requests.post(f'{AUTH_SERVICE_URL}/login', json={'username': username, 'password': password})
+        if response.status_code == 200: 
+            data = response.json()
             session["token"] = data["token"]
             return redirect(url_for("home"))
         else: 
@@ -44,8 +44,8 @@ def submit():
     
     token = session["token"]
     headers = {"Authorization": token}
-    res = requests.post(f'{AUTH_SERVICE_URL}/validate', headers=headers)
-    if res.status_code != 200: 
+    response = requests.post(f'{AUTH_SERVICE_URL}/validate', headers=headers)
+    if response.status_code != 200: 
         session.pop("token", None)
         return redirect(url_for("login"))
     
@@ -69,3 +69,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+    print("Running on http://127.0.0.1:{port}")
