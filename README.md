@@ -1,4 +1,27 @@
+
 # ACIT3495-Project1
+
+## Set up and installation
+
+1. Clone repository
+https://github.com/Lara40401/ACIT3495-Project1.git
+2. `cd` into the directory that contains the `docker-compose.yml` file.
+3. Start the services with Docker compose
+`docker-compose up --build`
+4. Verify all containers are running
+`docker ps`
+There should be six containers running:
+- "project1_data_entry"
+- "project1_results_service"
+- "project1_auth_service"
+- "project1_analytics_service"
+- "project1_mongo"
+- "project1_mysql"
+
+## Usage
+
+1. Enter data web app: `http://localhost:5000`
+2. Show results web app: `http://localhost:5003/show_results`
 
 ## Sources used for MongoDB connection and authentication setup
 
