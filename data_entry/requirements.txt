@@ -1,0 +1,4 @@
+Flask
+requests==2.32.0
+mysql-connector-python==8.1.0
+python-dotenv

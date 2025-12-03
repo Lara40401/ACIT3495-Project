@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Course Analytics</title>
+    <style>
+        th, td {
+            border: 1px black;
+            padding: 12px 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Course Analytics</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Highest Grade</th>
+                <th>Lowest Grade</th>
+                <th>Average Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.course }}</td>
+                <td>{{ row.max }}</td>
+                <td>{{ row.min }}</td>
+                <td>{{ row.avg }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/logout">Logout</a>
+</body>
+</html>

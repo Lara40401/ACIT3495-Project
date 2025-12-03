@@ -1,0 +1,107 @@
+services:
+  # MySQL database
+  db:
+    image: mysql:5.7
+    container_name: project1_mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    mem_limit: 256m
+
+  # MongoDB 
+  mongo:
+    image: mongo:8.0
+    container_name: project1_mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo/init.js:/docker-entrypoint-initdb.d/init.js:ro
+    ports:
+      - "27017:27017"
+    networks:
+      - app-network
+
+  # Authentication service
+  auth_service:
+    build: ./auth_service
+    container_name: project1_auth_service
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+
+  # Data entry service
+  data_entry:
+    build: ./data_entry
+    container_name: project1_data_entry
+    ports:
+      - "5000:5000"
+    depends_on:
+      - auth_service
+      - db
+    networks:
+      - app-network
+    environment:
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+
+  # Analytics service
+  analytics:
+    build: ./analytics
+    container_name: project1_analytics_service
+    depends_on:
+      - db
+      - mongo
+    networks:
+      - app-network
+    environment:
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+
+  # Show results service
+  show_results:
+    build: ./show_results
+    container_name: project1_results_service
+    depends_on:
+      - analytics
+      - mongo
+    networks:
+      - app-network
+    environment:
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+    ports:
+      - "5003:5003"
+
+volumes:
+  db_data:
+  mongo_data:
+
+networks:
+  app-network:
