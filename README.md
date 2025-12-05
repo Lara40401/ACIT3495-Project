@@ -1,3 +1,26 @@
+# ACIT3495-Project2
+
+## Run the command as following order:
+### Mysql
+1. `kubectl apply -f pwd-config.yaml`
+2. `kubectl apply -f mysql-initdb-configmap.yaml`
+3. `kubectl apply -f mysql-svc.yaml`
+### MongoDB
+4. `kubectl apply -f mongo-initdb-configmap.yaml`
+5. `kubectl apply -f mongo-deployment.yaml`
+6. `kubectl apply -f mongo-svc.yaml`
+### Wait for databases to be ready
+7. `kubectl wait --for=condition=ready pod -l app=mysql --timeout=120s`
+8. `kubectl wait --for=condition=ready pod -l app=mongo --timeout=120s`
+### Auth_service and Data entry services
+9. `kubectl apply -f auth_service_deployment.yaml`
+10. `kubectl apply -f auth_service_svc.yaml`
+11. `kubectl apply -f data_entry_deployment.yaml`
+12. `kubectl apply -f data_entry_svc.yaml`
+### Analytics and show_results services
+13. `kubectl apply -f analytics-deployent.yaml`
+14. `kubectl apply -f show_results_deployment.yaml`
+15. `kubectl apply -f show_results_svc.yaml`
 
 # ACIT3495-Project1
 

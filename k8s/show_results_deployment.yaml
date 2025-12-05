@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: show-results-deployment
+  labels:
+    app: show-results
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: show-results
+  template:
+    metadata:
+      labels:
+        app: show-results
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: show-results
+        image: ehirai/show_results:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5003
+        env:
+        - name: FLASK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: FLASK_SECRET_KEY
+        - name: MONGO_INITDB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MONGO_INITDB_DATABASE
+        - name: MONGO_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MONGO_USER
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MONGO_PASSWORD

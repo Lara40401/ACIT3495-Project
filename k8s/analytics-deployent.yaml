@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-deployment
+  labels:
+    app: analytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics
+  template:
+    metadata:
+      labels:
+        app: analytics
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: analytics
+        image: ehirai/analytics:v1
+        imagePullPolicy: Always
+        env:
+        - name: MYSQL_HOST
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MYSQL_HOST
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MYSQL_DATABASE
+
+        - name: MONGO_INITDB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MONGO_INITDB_DATABASE
+        - name: MONGO_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MONGO_USER
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MONGO_PASSWORD
