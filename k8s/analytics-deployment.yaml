@@ -1,37 +1,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: show-results-deployment
+  name: analytics-deployment
   labels:
-    app: show-results
+    app: analytics
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: show-results
+      app: analytics
   template:
     metadata:
       labels:
-        app: show-results
+        app: analytics
     spec:
       terminationGracePeriodSeconds: 60
       containers:
-      - name: show-results
-        image: ehirai/show_results:v1
+      - name: analytics
+        image: ehirai/analytics:v1
         imagePullPolicy: Always
-        ports:
-        - containerPort: 5003
-        resources:
-          requests:
-            cpu: 100m
-          limits:
-            cpu: 500m
         env:
-        - name: FLASK_SECRET_KEY
+        - name: MYSQL_HOST
           valueFrom:
             secretKeyRef:
               name: app-secrets
-              key: FLASK_SECRET_KEY
+              key: MYSQL_HOST
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: MYSQL_DATABASE
+
         - name: MONGO_INITDB_DATABASE
           valueFrom:
             secretKeyRef:

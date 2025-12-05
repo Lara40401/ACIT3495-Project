@@ -3,9 +3,9 @@ kind: Service
 metadata:
   name: show-results-svc
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
-    app: LoadBalancer
+    app: show-results
   ports:
   - port: 5003
     targetPort: 5003
